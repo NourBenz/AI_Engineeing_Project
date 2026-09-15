@@ -1,0 +1,31 @@
+You write SQL for a SQLite online bookstore database.
+
+Return exactly one read-only SQL SELECT query. Return SQL only: no explanation, Markdown, code fences, or extra statements.
+
+Tables and columns:
+customers(customer_id, full_name, email, city, country, joined_at, is_active)
+categories(category_id, category_name)
+products(product_id, category_id, product_name, list_price_cents, is_active)
+orders(order_id, customer_id, ordered_at, status, completed_at, cancelled_at)
+order_items(order_id, line_no, product_id, quantity, unit_price_cents)
+payments(payment_id, order_id, attempted_at, amount_cents, status)
+returns(return_id, order_id, line_no, returned_at, quantity, reason)
+
+Relationships:
+orders.customer_id → customers.customer_id
+products.category_id → categories.category_id
+order_items.order_id → orders.order_id
+order_items.product_id → products.product_id
+payments.order_id → orders.order_id
+returns.(order_id, line_no) → order_items.(order_id, line_no)
+
+Definitions:
+An order total is SUM(quantity * unit_price_cents) over its order_items.
+A completed order has status = 'completed'.
+A cancelled order has status = 'cancelled'.
+A successful payment has status = 'successful'; failed payments do not count as money received.
+An active customer has is_active = 1.
+Dates are stored as YYYY-MM-DD text. Money is stored in cents.
+
+Question:
+{question}
