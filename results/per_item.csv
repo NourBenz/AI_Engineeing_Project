@@ -1,0 +1,497 @@
+item_id,split,difficulty,model,correct,error,latency_ms,prompt_tokens,output_tokens,eval_duration_ns,done_reason,generated_sql
+test_001,test,easy,qwen2.5-coder:3b,1,,3013.49,423,30,444253000,stop,"SELECT customer_id, full_name FROM customers WHERE country = 'France' AND is_active = 0 ORDER BY customer_id;"
+test_002,test,easy,qwen2.5-coder:3b,1,,2900.28,422,40,594677000,stop,"SELECT COUNT(order_id) 
+FROM orders 
+WHERE status = 'cancelled' AND strftime('%Y-%m', ordered_at) = '2026-08';"
+test_003,test,easy,qwen2.5-coder:3b,1,,2955.52,429,40,670089000,stop,"SELECT MIN(list_price_cents) AS min_price_cents, MAX(list_price_cents) AS max_price_cents
+FROM products
+WHERE is_active = 1;"
+test_004,test,easy,qwen2.5-coder:3b,1,,3065.82,440,49,777707000,stop,"SELECT customer_id, full_name, joined_at
+FROM customers
+WHERE country = 'Morocco' AND joined_at < '2026-01-01'
+ORDER BY joined_at, customer_id;"
+test_005,test,easy,qwen2.5-coder:3b,0,,2715.47,424,23,431130000,stop,"SELECT order_id, customer_id FROM orders WHERE completed_at IS NULL ORDER BY order_id;"
+test_006,test,easy,qwen2.5-coder:3b,1,,3105.99,446,50,793286000,stop,"SELECT product_id, product_name, list_price_cents
+FROM products
+WHERE is_active = 0 AND list_price_cents > 10000
+ORDER BY list_price_cents DESC, product_id;"
+test_007,test,easy,qwen2.5-coder:3b,0,,2713.04,425,24,419904000,stop,SELECT COUNT(order_id) FROM orders WHERE ordered_at < '2026-04-01'
+test_008,test,easy,qwen2.5-coder:3b,1,,2691.48,424,22,421844000,stop,SELECT DISTINCT city FROM customers WHERE country = 'France' AND is_active = 1 ORDER BY city ASC
+test_009,test,easy,qwen2.5-coder:3b,1,,3094.65,446,52,770136000,stop,"SELECT product_id, product_name, list_price_cents
+FROM products
+WHERE is_active = 1 AND list_price_cents BETWEEN 3000 AND 7000
+ORDER BY product_name, product_id;"
+test_010,test,easy,qwen2.5-coder:3b,1,,2875.09,438,35,588589000,stop,"SELECT order_id, completed_at
+FROM orders
+WHERE status = 'completed'
+ORDER BY completed_at DESC, order_id DESC
+LIMIT 5;"
+test_011,test,easy,qwen2.5-coder:3b,1,,2824.8,431,31,516227999,stop,"SELECT AVG(quantity) AS avg_quantity_per_line
+FROM order_items
+WHERE unit_price_cents >= 5000;"
+test_012,test,easy,qwen2.5-coder:3b,1,,2610.33,419,17,321333000,stop,SELECT COUNT(DISTINCT customer_id) FROM orders WHERE status = 'cancelled'
+test_013,test,easy,qwen2.5-coder:3b,1,,3104.03,446,53,768514000,stop,"SELECT payment_id, order_id, amount_cents
+FROM payments
+WHERE status = 'failed' AND attempted_at IS NOT NULL AND amount_cents > 20000
+ORDER BY amount_cents DESC, payment_id;"
+test_014,test,easy,qwen2.5-coder:3b,1,,2596.45,420,12,297538000,stop,SELECT COUNT(*) FROM order_items WHERE quantity = 5
+test_015,test,easy,qwen2.5-coder:3b,1,,2808.5,428,27,494649000,stop,"SELECT return_id, order_id, quantity FROM returns WHERE reason = 'damaged' ORDER BY return_id;"
+test_016,test,easy,qwen2.5-coder:3b,1,,2774.51,423,27,505902000,stop,"SELECT MIN(joined_at) AS earliest_date, MAX(joined_at) AS latest_date FROM customers WHERE is_active = 0"
+test_017,test,easy,qwen2.5-coder:3b,1,,2974.24,434,42,696222000,stop,"SELECT order_id, ordered_at
+FROM orders
+WHERE status = 'placed'
+  AND cancelled_at IS NULL
+ORDER BY ordered_at ASC, order_id ASC
+LIMIT 5;"
+test_018,test,easy,qwen2.5-coder:3b,1,,2747.67,423,24,458468000,stop,"SELECT COUNT(DISTINCT product_id) 
+FROM order_items 
+WHERE quantity >= 3;"
+test_019,test,medium,qwen2.5-coder:3b,1,,3291.64,441,68,974846000,stop,"SELECT 
+    c.customer_id,
+    c.full_name,
+    COUNT(o.order_id) AS order_count
+FROM 
+    customers c
+LEFT JOIN 
+    orders o ON c.customer_id = o.customer_id
+GROUP BY 
+    c.customer_id, c.full_name
+ORDER BY 
+    c.customer_id;"
+test_020,test,medium,qwen2.5-coder:3b,1,,3281.76,443,62,969726000,stop,"SELECT c.category_name, COUNT(p.product_id) AS active_product_count
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+WHERE p.is_active = 1
+GROUP BY c.category_name
+ORDER BY active_product_count DESC, c.category_name ASC;"
+test_021,test,medium,qwen2.5-coder:3b,1,,3854.18,445,106,1531486000,stop,"SELECT 
+    o.order_id,
+    SUM(oi.quantity * oi.unit_price_cents) AS order_total_cents
+FROM 
+    orders o
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status = 'completed' AND 
+    strftime('%Y-%m', o.ordered_at) = '2026-08'
+GROUP BY 
+    o.order_id
+ORDER BY 
+    order_total_cents DESC, o.order_id;"
+test_022,test,medium,qwen2.5-coder:3b,0,,3272.28,427,60,967836000,stop,"SELECT c.country, COUNT(o.order_id) AS completed_order_count
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.status = 'completed' AND c.is_active = 1
+GROUP BY c.country
+ORDER BY c.country;"
+test_023,test,medium,qwen2.5-coder:3b,0,sql_error: no such column: o.order_id,3399.38,442,71,1077242000,stop,"SELECT p.product_id, p.product_name, COUNT(o.order_id) AS order_count
+FROM products p
+JOIN order_items oi ON p.product_id = oi.product_id
+GROUP BY p.product_id, p.product_name
+HAVING COUNT(o.order_id) >= 5
+ORDER BY order_count DESC, p.product_id;"
+test_024,test,medium,qwen2.5-coder:3b,1,,3596.92,438,85,1290011000,stop,"SELECT c.category_name, COUNT(oi.line_no) AS line_count
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+JOIN order_items oi ON p.product_id = oi.product_id
+JOIN orders o ON oi.order_id = o.order_id
+WHERE o.status = 'completed'
+GROUP BY c.category_name
+ORDER BY line_count DESC, c.category_name ASC;"
+test_025,test,medium,qwen2.5-coder:3b,1,,2991.07,429,42,697211000,stop,"SELECT strftime('%Y-%m', ordered_at) AS month, COUNT(*) AS cancelled_order_count
+FROM orders
+WHERE status = 'cancelled'
+GROUP BY month
+ORDER BY month;"
+test_026,test,medium,qwen2.5-coder:3b,0,,3490.44,439,77,1180473000,stop,"SELECT 
+    o.status,
+    SUM(oi.quantity * oi.unit_price_cents) AS total_units
+FROM 
+    orders o
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status IN ('placed', 'completed', 'cancelled')
+GROUP BY 
+    o.status
+ORDER BY 
+    o.status;"
+test_027,test,medium,qwen2.5-coder:3b,1,,3445.19,442,78,1109809000,stop,"SELECT c.customer_id, c.full_name, COUNT(o.order_id) AS order_count
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE c.city = 'Sfax'
+GROUP BY c.customer_id, c.full_name
+HAVING COUNT(o.order_id) >= 2
+ORDER BY order_count DESC, c.customer_id;"
+test_028,test,medium,qwen2.5-coder:3b,1,,3450.6,447,69,1137555000,stop,"SELECT c.city, COUNT(p.payment_id) AS failed_attempt_count
+FROM payments p
+JOIN orders o ON p.order_id = o.order_id
+JOIN customers c ON o.customer_id = c.customer_id
+WHERE p.status = 'failed'
+GROUP BY c.city
+ORDER BY failed_attempt_count DESC, c.city;"
+test_029,test,medium,qwen2.5-coder:3b,0,,3815.2,442,100,1491081000,stop,"SELECT 
+    c.customer_id,
+    c.full_name,
+    COUNT(p.payment_id) AS successful_payment_count
+FROM 
+    customers c
+LEFT JOIN 
+    orders o ON c.customer_id = o.customer_id
+LEFT JOIN 
+    payments p ON o.order_id = p.order_id AND p.status = 'successful'
+WHERE 
+    c.is_active = 1
+GROUP BY 
+    c.customer_id, c.full_name
+ORDER BY 
+    c.customer_id;"
+test_030,test,medium,qwen2.5-coder:3b,0,sql_error: no such column: ri.quantity,3775.5,443,95,1383651000,stop,"SELECT c.category_name, SUM(ri.quantity) AS returned_units
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+JOIN order_items oi ON p.product_id = oi.product_id
+JOIN returns r ON oi.order_id = r.order_id
+WHERE r.status = 'returned'
+GROUP BY c.category_name
+HAVING COUNT(r.return_id) > 0
+ORDER BY returned_units DESC, c.category_name ASC;"
+test_031,test,medium,qwen2.5-coder:3b,1,,3550.06,447,80,1219680000,stop,"SELECT 
+    r.reason,
+    COUNT(*) AS partial_return_count
+FROM 
+    returns r
+JOIN 
+    order_items oi ON r.order_id = oi.order_id AND r.line_no = oi.line_no
+WHERE 
+    r.quantity < oi.quantity
+GROUP BY 
+    r.reason
+HAVING 
+    COUNT(*) > 0
+ORDER BY 
+    reason;"
+test_032,test,medium,qwen2.5-coder:3b,1,,3321.21,426,66,1029644000,stop,"SELECT o.order_id, COUNT(DISTINCT oi.product_id) AS product_count
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE o.status = 'completed'
+GROUP BY o.order_id
+HAVING product_count >= 4
+ORDER BY o.order_id;"
+test_033,test,medium,qwen2.5-coder:3b,0,,3372.07,432,72,1062401000,stop,"SELECT c.country, AVG(oi.quantity) AS average_quantity
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE o.status = 'completed' AND c.is_active = 1
+GROUP BY c.country
+ORDER BY c.country;"
+test_034,test,medium,qwen2.5-coder:3b,0,,3837.9,441,104,1536923000,stop,"SELECT 
+    c.customer_id,
+    c.full_name,
+    SUM(CASE WHEN o.status = 'completed' THEN oi.quantity ELSE 0 END) AS completed_units
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    c.customer_id, c.full_name
+ORDER BY 
+    c.customer_id;"
+test_035,test,medium,qwen2.5-coder:3b,1,,3522.86,449,80,1183591000,stop,"SELECT 
+    c.category_name,
+    MAX(p.list_price_cents) AS highest_price_cents,
+    COUNT(*) AS active_product_count
+FROM 
+    categories c
+JOIN 
+    products p ON c.category_id = p.category_id
+WHERE 
+    p.is_active = 1
+GROUP BY 
+    c.category_name
+ORDER BY 
+    c.category_name;"
+test_036,test,medium,qwen2.5-coder:3b,1,,3227.28,430,58,916911000,stop,"SELECT 
+    o.status,
+    COUNT(DISTINCT c.customer_id) AS customer_count
+FROM 
+    orders o
+JOIN 
+    customers c ON o.customer_id = c.customer_id
+GROUP BY 
+    o.status
+ORDER BY 
+    o.status;"
+test_037,test,medium,qwen2.5-coder:3b,1,,3218.7,440,60,943332000,stop,"SELECT c.city, COUNT(r.return_id) AS return_count
+FROM returns r
+JOIN orders o ON r.order_id = o.order_id
+JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY c.city
+ORDER BY return_count DESC, c.city;"
+test_038,test,medium,qwen2.5-coder:3b,1,,3704.21,439,95,1394290000,stop,"SELECT 
+    o.status AS order_status,
+    SUM(CASE WHEN p.status = 'successful' THEN 1 ELSE 0 END) AS successful_count,
+    SUM(CASE WHEN p.status = 'failed' THEN 1 ELSE 0 END) AS failed_count
+FROM 
+    orders o
+LEFT JOIN 
+    payments p ON o.order_id = p.order_id
+GROUP BY 
+    o.status
+ORDER BY 
+    order_status;"
+test_039,test,hard,qwen2.5-coder:3b,1,,3671.31,429,91,1383499000,stop,"SELECT c.customer_id, c.full_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.status = 'cancelled'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM orders o2
+    WHERE o2.customer_id = c.customer_id
+      AND o2.status = 'completed'
+  )
+GROUP BY c.customer_id, c.full_name
+ORDER BY c.customer_id;"
+test_040,test,hard,qwen2.5-coder:3b,0,,4064.39,426,119,1713837000,stop,"SELECT c.customer_id, c.full_name
+FROM customers c
+JOIN (
+    SELECT customer_id, COUNT(*) AS completed_orders
+    FROM orders
+    WHERE status = 'completed'
+    GROUP BY customer_id
+) oc ON c.customer_id = oc.customer_id
+JOIN (
+    SELECT customer_id, COUNT(*) AS cancelled_orders
+    FROM orders
+    WHERE status = 'cancelled'
+    GROUP BY customer_id
+) oc2 ON c.customer_id = oc2.customer_id
+WHERE oc.completed_orders > oc2.cancelled_orders
+ORDER BY c.customer_id;"
+test_041,test,hard,qwen2.5-coder:3b,1,,4118.55,444,127,1788511000,stop,"SELECT 
+    p.product_id,
+    p.product_name,
+    COUNT(DISTINCT c.country) AS country_count
+FROM 
+    products p
+JOIN 
+    order_items oi ON p.product_id = oi.product_id
+JOIN 
+    orders o ON oi.order_id = o.order_id
+JOIN 
+    customers c ON o.customer_id = c.customer_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    p.product_id, p.product_name
+HAVING 
+    COUNT(DISTINCT c.country) >= 2
+ORDER BY 
+    country_count DESC,
+    p.product_id;"
+test_042,test,hard,qwen2.5-coder:3b,0,,4330.22,439,138,1993354000,stop,"SELECT DISTINCT c.customer_id, c.full_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+LEFT JOIN payments p ON o.order_id = p.order_id AND p.status = 'successful'
+WHERE o.status = 'completed' AND p.attempted_at IS NOT NULL
+INTERSECT
+SELECT DISTINCT c.customer_id, c.full_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+LEFT JOIN payments p ON o.order_id = p.order_id AND p.status = 'successful'
+WHERE o.status = 'completed' AND p.attempted_at IS NULL
+ORDER BY c.customer_id;"
+test_043,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: o.total,3635.13,452,88,1343307000,stop,"SELECT 
+    c.customer_id,
+    c.full_name,
+    MAX(o.total) AS largest_completed_order_total_cents
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    c.customer_id, c.full_name
+ORDER BY 
+    largest_completed_order_total_cents DESC,
+    c.customer_id;"
+test_044,test,hard,qwen2.5-coder:3b,0,,4202.18,431,128,1914380000,stop,"SELECT o.order_id
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+LEFT JOIN returns r ON oi.order_id = r.order_id AND oi.line_no = r.line_no
+WHERE o.status = 'completed'
+  AND oi.quantity > 0
+GROUP BY o.order_id
+HAVING SUM(CASE WHEN r.returned_at IS NOT NULL THEN 1 ELSE 0 END) > 0
+  AND SUM(CASE WHEN r.returned_at IS NOT NULL THEN oi.quantity - r.quantity ELSE 0 END) = 0
+ORDER BY o.order_id;"
+test_045,test,hard,qwen2.5-coder:3b,0,,4245.01,446,131,1918457000,stop,"SELECT 
+    c.customer_id,
+    c.full_name,
+    SUM(
+        CASE 
+            WHEN o.status = 'completed' THEN oi.quantity * oi.unit_price_cents
+            ELSE 0
+        END
+    ) AS total_spent_cents
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    c.customer_id, c.full_name
+ORDER BY 
+    total_spent_cents DESC,
+    c.customer_id ASC;"
+test_046,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: order_items.line_no,3615.67,444,88,1296334000,stop,"SELECT c.customer_id, c.full_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.status = 'completed'
+GROUP BY c.customer_id, c.full_name
+HAVING COUNT(DISTINCT o.order_id) >= 2 AND 
+       SUM(CASE WHEN COUNT(order_items.line_no) = 1 THEN 1 ELSE 0 END) = 1;"
+test_047,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: o.is_active,3530.74,431,84,1250243000,stop,"SELECT p.product_id, p.product_name
+FROM products p
+JOIN order_items oi ON p.product_id = oi.product_id
+WHERE oi.order_id IN (
+    SELECT o.order_id
+    FROM orders o
+    WHERE o.status = 'completed' AND o.is_active = 1
+)
+AND oi.order_id NOT IN (
+    SELECT r.order_id
+    FROM returns r
+);"
+test_048,test,hard,qwen2.5-coder:3b,0,,3119.76,446,51,805265000,stop,"SELECT DISTINCT c.customer_id, c.full_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.status = 'cancelled'
+ORDER BY o.ordered_at ASC, o.order_id ASC;"
+test_049,test,hard,qwen2.5-coder:3b,0,,4345.93,444,133,2045016000,stop,"SELECT 
+    o.order_id,
+    SUM(oi.quantity * oi.unit_price_cents) AS order_total_cents,
+    SUM(p.amount_cents) AS paid_cents
+FROM 
+    orders o
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+JOIN 
+    payments p ON o.order_id = p.order_id AND p.status = 'successful'
+WHERE 
+    o.status IN ('completed', 'cancelled')
+GROUP BY 
+    o.order_id
+HAVING 
+    SUM(p.amount_cents) < SUM(oi.quantity * oi.unit_price_cents)
+ORDER BY 
+    o.order_id;"
+test_050,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: o.is_active,4795.44,438,173,2484394000,stop,"SELECT 
+    c.category_name,
+    SUM(r.quantity) AS returned_units,
+    SUM(oi.quantity) AS bought_units,
+    (SUM(r.quantity) * 1.0 / SUM(oi.quantity)) AS return_ratio
+FROM 
+    categories c
+JOIN 
+    products p ON c.category_id = p.category_id
+LEFT JOIN 
+    order_items oi ON p.product_id = oi.product_id
+LEFT JOIN 
+    orders o ON oi.order_id = o.order_id
+LEFT JOIN 
+    returns r ON oi.order_id = r.order_id AND oi.line_no = r.line_no
+WHERE 
+    o.status = 'completed' AND o.is_active = 1
+GROUP BY 
+    c.category_name, c.category_id
+ORDER BY 
+    return_ratio DESC,
+    c.category_id ASC
+LIMIT 1;"
+test_051,test,hard,qwen2.5-coder:3b,0,,4388.84,454,143,2055143999,stop,"SELECT 
+    c.country,
+    c.customer_id,
+    c.full_name,
+    SUM(
+        CASE 
+            WHEN o.status = 'completed' THEN oi.quantity * oi.unit_price_cents
+            ELSE 0
+        END
+    ) AS total_spent_cents
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+WHERE 
+    o.status IN ('completed', 'cancelled')
+GROUP BY 
+    c.country, c.customer_id, c.full_name
+ORDER BY 
+    c.country, total_spent_cents DESC, c.customer_id ASC;"
+test_052,test,hard,qwen2.5-coder:3b,0,,3694.64,424,93,1363120000,stop,"SELECT o.order_id
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+JOIN products p ON oi.product_id = p.product_id
+WHERE o.status = 'completed' AND p.is_active = 0
+GROUP BY o.order_id
+HAVING COUNT(oi.line_no) = SUM(CASE WHEN p.is_active = 1 THEN 0 ELSE 1 END)
+ORDER BY o.order_id;"
+test_053,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: r.customer_id,4672.09,446,160,2372137000,stop,"SELECT 
+    c.customer_id,
+    p.product_id
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    order_items oi ON o.order_id = oi.order_id
+JOIN 
+    products p ON oi.product_id = p.product_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    c.customer_id, p.product_id
+HAVING 
+    COUNT(DISTINCT o.order_id) >= 2
+INTERSECT
+SELECT 
+    r.customer_id,
+    r.product_id
+FROM 
+    returns r
+JOIN 
+    orders o ON r.order_id = o.order_id
+WHERE 
+    o.status = 'completed'
+GROUP BY 
+    r.customer_id, r.product_id;"
+test_054,test,hard,qwen2.5-coder:3b,0,sql_error: no such column: oi.quantity,5024.2,444,183,2711233000,stop,"SELECT 
+    c.category_name,
+    SUM(CASE WHEN o.status = 'completed' THEN oi.quantity * oi.unit_price_cents ELSE 0 END) AS completed_cents,
+    SUM(CASE WHEN o.status = 'cancelled' THEN oi.quantity * oi.unit_price_cents ELSE 0 END) AS cancelled_cents
+FROM 
+    categories c
+JOIN 
+    products p ON c.category_id = p.category_id
+JOIN 
+    orders o ON p.product_id = oi.product_id AND o.order_id = oi.order_id
+LEFT JOIN 
+    returns r ON o.order_id = r.order_id AND oi.line_no = r.line_no
+WHERE 
+    o.status IN ('completed', 'cancelled')
+GROUP BY 
+    c.category_name, c.category_id
+ORDER BY 
+    completed_cents - cancelled_cents DESC,
+    category_id ASC
+LIMIT 1;"

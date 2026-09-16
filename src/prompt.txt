@@ -26,6 +26,9 @@ A cancelled order has status = 'cancelled'.
 A successful payment has status = 'successful'; failed payments do not count as money received.
 An active customer has is_active = 1.
 Dates are stored as YYYY-MM-DD text. Money is stored in cents.
+Apply status and is_active filters only when the question explicitly asks for them. Do not assume customers or products must be active.
+A return's quantity is the number of units returned from that order item. Having a return record does not mean all purchased units were returned.
+Apply status and is_active filters only when the question explicitly asks for them. Do not assume customers or products must be active.
 
 Question:
 {question}
